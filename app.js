@@ -32,14 +32,20 @@ let data = {
   ]
 };
 
-app.get('/', function(req, res, next) {
+// HARD MODE
+// TODO: add a logout button on landing page
+// TODO: add a signup page that allows a user to make new credentials and push them to [credentials]
 
+app.get('/', function(req, res) {
+  let myUser = {};
+  myUser.username = req.session.username;
+  myUser.password = req.session.password;
   if (typeof req.session.username === 'undefined') {
     console.log("REDIRECTING TO LOGIN PAGE");
     res.redirect('/login');
   } else {
     console.log(req.session.username); // undefined
-    res.render("index");
+    res.render("index", myUser);
   }
 });
 
