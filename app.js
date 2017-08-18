@@ -24,6 +24,7 @@ app.set('view engine', 'mustache');
 let data = {
   users: [
     {username: "swkane", password: "sam"},
+    {username: "abentson", password: "abby"},
     {username: "zwschneid", password: "zach"},
     {username: "npkane", password: "nick"},
     {username: "blehman", password: "ben"},
@@ -33,7 +34,18 @@ let data = {
 
 // TODO: upon landing, check to see if someone has signed in
 
-app.get('/', function(req, res) {
+app.get('/', function(req, res, next) {
+
+  // TODO: tailor this code in order to auth at initial login
+  // if (req.originalUrl === '/' && typeof req.session.username === 'undefined') {
+  //   console.log("REDIRECTING TO LOGIN PAGE");
+  //   res.redirect('/login');
+  // } else {
+  //   res.render("index", data)
+  //   next();
+  // }
+  // TODO: find a way to define this accurately
+  console.log(req.session.username); // undefined
   res.render('index');
 });
 
@@ -41,14 +53,25 @@ app.get('/login', function(req, res) {
   res.render('login');
 });
 
-app.post('/login/auth', function(req, res) {
+app.post('/login/auth', function(req, res, next) {
+  let credentials = data.users;
+  let authenticated = false;
+  function userAuth(element) {
+    if (element.username === req.body.username && element.password === req.body.password) {
+      authenticated = true;
+    }
+  }
+  credentials.find(userAuth);
+  if (authenticated) {
+    res.redirect('/');
+  } else {
+    res.redirect('/login');
+  }
+  console.log(req.session.username); // undefined
   console.log(req.body.username);
   console.log(req.body.password);
-  res.redirect('/');
 });
 
-// TODO: compare credentials against a data structure
-// TODO: if a credentials match a key value pair for a given object, redirect user back to landing page
 
 
 app.listen(3000, function(){
