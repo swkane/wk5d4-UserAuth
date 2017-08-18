@@ -32,21 +32,15 @@ let data = {
   ]
 };
 
-// TODO: upon landing, check to see if someone has signed in
-
 app.get('/', function(req, res, next) {
 
-  // TODO: tailor this code in order to auth at initial login
-  // if (req.originalUrl === '/' && typeof req.session.username === 'undefined') {
-  //   console.log("REDIRECTING TO LOGIN PAGE");
-  //   res.redirect('/login');
-  // } else {
-  //   res.render("index", data)
-  //   next();
-  // }
-  // TODO: find a way to define this accurately
-  console.log(req.session.username); // undefined
-  res.render('index');
+  if (typeof req.session.username === 'undefined') {
+    console.log("REDIRECTING TO LOGIN PAGE");
+    res.redirect('/login');
+  } else {
+    console.log(req.session.username); // undefined
+    res.render("index");
+  }
 });
 
 app.get('/login', function(req, res) {
@@ -63,6 +57,8 @@ app.post('/login/auth', function(req, res, next) {
   }
   credentials.find(userAuth);
   if (authenticated) {
+    req.session.username = req.body.username;
+	  req.session.password = req.body.password;
     res.redirect('/');
   } else {
     res.redirect('/login');
